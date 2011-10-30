@@ -14,43 +14,32 @@ are.
 
 ## Example
 
-Suppose we have `MenuItem`, which we use to represent restaurant meny data. In
-this case, we care about the meal during which we'd serve this item, and the
-condiments available for the item:
+Suppose we have `Person`, and we're interested in a `Person`'s name and birth
+date.
 
-    class MenuItem
+    class Person
 
-      attr_reader :name, :meal, :condiments
+      attr_reader :name, :birth_date
 
       def initialize(name)
         @name = name
-        @meal = nil
-        @condiments = []
       end
 
-      # MenuItem implementation
+      # Person implementation
 
     end
 
-Now, we can make `MenuItem` cute.
+Now we can configure cutesy for `Person`:
      
-    Cutesy.klass MenuItem do |menu_item|
-
-      menu_item.sets :meal, :with => :for
-      menu_item.sets :condiments, :with => :with_condiments
-
+    Cutesy.klass Person do |person|
+      person.sets :name, :with => :named
+      person.sets :birth_date, :with => :born_on
     end
 
 And lo, we can do things like this:
 
-    #> m = MenuItem.new('Cheeseburger').for(lunch).with_condiments(condiments)
-    >> <MenuItem>
-    #> m.name == 'Condiments'
-    >> true
-    #> m.meal == meal
-    >> true
-    #> m.condiments == condiments
-    >> true
+    ruby :001 > brian = Person.new.named('Brian').born_on('August 8th, 1988')
+    => #<Person @name="Brian", @birth_date="August 8th, 1988">
 
 ## Plays well (I hope!) with others
 
@@ -62,15 +51,22 @@ you than cute syntax is worth. No worries; you can bend Cutesy to your will.
 Let's say you have a Rails app and want to set every attribute using
 `update_attribute` (hypothetically, of course):
 
-    Cutesy.template do |cute_object, attribute, value|
-      cute_object.update_attribute(attribute, value)
+    Cutesy.template do |object, attribute, value|
+      object.update_attribute(attribute, value)
     end
 
-And if you only want to change the behavior for one class, you'd give that class
-as an argument:
+In the event that you have Cutesied up several classes, but you only need
+custom behavior for a subset of them, you can specify custom behavior on a
+per-class basis:
 
-    Cutesy.template MenuItem do |cute_object, attribute, value|
-      # template
+    Cutesy.template Person do |object, attribute, value|
+      # template will only be called for attributes on instances of Person
+    end
+
+Finally, you can change the behavior for a single attribute of a single class:
+
+    Cutesy.template Person, :name do |object, attribute, value|
+      # template will only be called when setting Person#name
     end
 
 ## Prior Art?
