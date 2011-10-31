@@ -48,9 +48,13 @@ class Cutesy
   end
 
   def sets(attribute, options = {})
-    cute_attribute = CuteAttribute.new(@klass, attribute)
+    cute_attribute = CuteAttribute.new(self, attribute)
 
     @setters_by_attribute[cute_attribute] = options[:with]
+  end
+
+  def template_for(attribute)
+    self.class.template_for(@klass, attribute)
   end
 
   def build!
@@ -71,8 +75,8 @@ end
 
 class CuteAttribute
 
-  def initialize(klass, attribute)
-    @klass = klass
+  def initialize(cutesied_class, attribute)
+    @cutesied_class = cutesied_class
     @attribute = attribute
   end
 
@@ -81,7 +85,7 @@ class CuteAttribute
   end
 
   def template
-    Cutesy.template_for(@klass, @attribute) || default_template
+    @cutesied_class.template_for(@attribute) || default_template
   end
 
   private
