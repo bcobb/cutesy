@@ -1,8 +1,8 @@
 # Cutesy
 
 Though the name will likely change seven times before I'm done with this, the
-intent sure won't. Cutesy is a, well, _cutesy_ way to get nice, meaningful names
-for your setters.
+intent probably won't. Cutesy is a, well, _cutesy_ way to get nice, meaningful
+names for your setters.
 
 ## Why?
 
