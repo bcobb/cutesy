@@ -44,13 +44,13 @@ class Cutesy
 
   def initialize(klass)
     @klass = klass
-    @setters_by_attribute = {}
+    @setters = []
+    @attributes = []
   end
 
   def sets(attribute, options = {})
-    cute_attribute = CuteAttribute.new(self, attribute)
-
-    @setters_by_attribute[cute_attribute] = options[:with]
+    @attributes << CuteAttribute.new(self, attribute)
+    @setters << options[:with]
   end
 
   def template_for(attribute)
@@ -58,7 +58,7 @@ class Cutesy
   end
 
   def build!
-    attributes = @setters_by_attribute
+    attributes = @attributes.zip @setters
 
     @klass.class_eval do
       attributes.each do |attribute, setter|
