@@ -2,7 +2,8 @@
 
 Though the name will likely change seven times before I'm done with this, the
 intent probably won't. Cutesy is a, well, _cutesy_ way to get nice, meaningful
-names for your setters.
+names for your setters. If you dig patterns, it's a flexible way to implement a
+Builder.
 
 ## Why?
 
