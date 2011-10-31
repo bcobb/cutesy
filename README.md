@@ -20,11 +20,7 @@ date.
 
     class Person
 
-      attr_reader :name, :birth_date
-
-      def initialize(name)
-        @name = name
-      end
+      attr_accessor :name, :birth_date
 
       # Person implementation
 
