@@ -3,7 +3,10 @@ class Cutesy
   class << self
 
     def klass(klass)
-      yield new(klass)
+      cutesy = new(klass)
+      yield cutesy
+
+      cutesy.build!
     end
 
     def template(klass = nil, attribute = nil, &block)
@@ -41,18 +44,26 @@ class Cutesy
 
   def initialize(klass)
     @klass = klass
+    @setters_by_attribute = {}
   end
 
   def sets(attribute, options = {})
-    cute_setter = options[:with]
     cute_attribute = CuteAttribute.new(@klass, attribute)
 
+    @setters_by_attribute[cute_attribute] = options[:with]
+  end
+
+  def build!
+    attributes = @setters_by_attribute
+
     @klass.class_eval do
+      attributes.each do |attribute, setter|
 
-      define_method(cute_setter) do |value|
-        tap { |object| cute_attribute.set!(object, value) }
+        define_method(setter) do |value|
+          tap { |object| attribute.set!(object, value) }
+        end
+
       end
-
     end
   end
 
