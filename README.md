@@ -16,29 +16,33 @@ are.
 Suppose we have `Person`, and we want to define a few templates for new people.
 Ideally, we'd have a method like so:
 
-    class Person
+```ruby
+class Person
 
-      attr_accessor :name, :birth_date
+  attr_accessor :name, :birth_date
 
-      def self.newborn_named(name)
-        new.named(name).born_on(Date.today)
-      end
+  def self.newborn_named(name)
+    new.named(name).born_on(Date.today)
+  end
 
-      # Person implementation
+  # Person implementation
 
-    end
+end
+```
 
 Here's how we use Fluentr to do this:
 
-    class Person
-      extend Fluently
+```ruby
+class Person
+  extend Fluently
 
-      fluently do
-        set :name, :with => :named
-        set :birth_date, :with => :born_on
-      end
+  fluently do
+    set :name, :with => :named
+    set :birth_date, :with => :born_on
+  end
 
-    end
+end
+```
 
 ## Plays well (I hope!) with others
 
@@ -49,29 +53,33 @@ If you'd like to use a different strategy to set one or more attributes, you can
 bend Fluentr to your will. Let's say you have a Rails app and want to set every
 attribute using `update_attribute` (hypothetically, of course):
 
-    Fluentr.template do |object, attribute, value|
-      object.update_attribute(attribute, value)
-    end
+```ruby
+Fluentr.template do |object, attribute, value|
+  object.update_attribute(attribute, value)
+end
+```
 
 You can do this on a per-class, or per-attribute basis, too
 
-    class Person
-      extend Fluently
+```ruby
+class Person
+  extend Fluently
 
-      # We'll use +update_attribute+ to set +name+, but we'll use some custom
-      # method to set everything else
-      fluently do
-        set :birth_date, :with => :born_on
-        set :name, :with => :named do |person, attribute, value|
-          person.update_attribute(attribute, value)
-        end
-
-        template :set do |object, attribute, value|
-          object.set_with_an_audit(attribute, value)
-        end
-      end
-
+  # We'll use +update_attribute+ to set +name+, but we'll use some custom
+  # method to set everything else
+  fluently do
+    set :birth_date, :with => :born_on
+    set :name, :with => :named do |person, attribute, value|
+      person.update_attribute(attribute, value)
     end
+
+    template :set do |object, attribute, value|
+      object.set_with_an_audit(attribute, value)
+    end
+  end
+
+end
+```
 
 ## TODO
 
