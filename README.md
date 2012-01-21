@@ -1,8 +1,7 @@
 # Fluentr
 
 Fluentr provides tooling to quickly build fluent interfaces to your Ruby
-objects. Its only opinion is that such interfaces should be `protected` by
-default, and exposed publicly with discretion.
+objects.
 
 ## Why?
 
@@ -67,12 +66,17 @@ You can do this on a per-class, or per-attribute basis, too
           person.update_attribute(attribute, value)
         end
 
-        template do |object, attribute, value|
+        template :set do |object, attribute, value|
           object.set_with_an_audit(attribute, value)
         end
       end
 
     end
+
+## TODO
+
+1. Concise syntax for toggle-able attributes.
+2. Concise syntax for numerical attributes.
 
 ## Prior Art?
 
