@@ -1,9 +1,8 @@
-# Cutesy
+# Fluentr
 
-Though the name will likely change seven times before I'm done with this, the
-intent probably won't. Cutesy is a, well, _cutesy_ way to get nice, meaningful
-names for your setters. If you dig patterns, it's a flexible way to implement a
-Builder.
+Fluentr provides tooling to quickly build fluent interfaces to your Ruby
+objects. Its only opinion is that such interfaces should be `protected` by
+default, and exposed publicly with discretion.
 
 ## Why?
 
@@ -15,59 +14,68 @@ are.
 
 ## Example
 
-Suppose we have `Person`, and we're interested in a `Person`'s name and birth
-date.
+Suppose we have `Person`, and we want to define a few templates for new people.
+Ideally, we'd have a method like so:
 
     class Person
 
       attr_accessor :name, :birth_date
 
+      def self.newborn_named(name)
+        new.named(name).born_on(Date.today)
+      end
+
       # Person implementation
 
     end
 
-Now we can configure cutesy for `Person`:
-     
-    Cutesy.klass Person do |person|
-      person.sets :name, :with => :named
-      person.sets :birth_date, :with => :born_on
+Here's how we use Fluentr to do this:
+
+    class Person
+      extend Fluently
+
+      fluently do
+        set :name, :with => :named
+        set :birth_date, :with => :born_on
+      end
+
     end
-
-And lo, we can do things like this:
-
-    ruby :001 > brian = Person.new.named('Brian').born_on('August 8th, 1988')
-    => #<Person @name="Brian", @birth_date="August 8th, 1988">
 
 ## Plays well (I hope!) with others
 
-Out of the box, Cutesy will use an accessor if it can find one. Otherwise, it
-will set an instance variable directly. 
+By default, Fluentr will use an accessor if it can find one. Otherwise, it
+will set an instance variable directly.
 
-But what do I know about anything? Maybe that behavior causes more problems for
-you than cute syntax is worth. No worries; you can bend Cutesy to your will.
-Let's say you have a Rails app and want to set every attribute using
-`update_attribute` (hypothetically, of course):
+If you'd like to use a different strategy to set one or more attributes, you can
+bend Fluentr to your will. Let's say you have a Rails app and want to set every
+attribute using `update_attribute` (hypothetically, of course):
 
-    Cutesy.template do |object, attribute, value|
+    Fluentr.template do |object, attribute, value|
       object.update_attribute(attribute, value)
     end
 
-In the event that you have Cutesied up several classes, but you only need
-custom behavior for a subset of them, you can specify custom behavior on a
-per-class basis:
+You can do this on a per-class, or per-attribute basis, too
 
-    Cutesy.template Person do |object, attribute, value|
-      # template will only be called for attributes on instances of Person
-    end
+    class Person
+      extend Fluently
 
-Finally, you can change the behavior for a single attribute of a single class:
+      # We'll use +update_attribute+ to set +name+, but we'll use some custom
+      # method to set everything else
+      fluently do
+        set :birth_date, :with => :born_on
+        set :name, :with => :named do |person, attribute, value|
+          person.update_attribute(attribute, value)
+        end
 
-    Cutesy.template Person, :name do |object, attribute, value|
-      # template will only be called when setting Person#name
+        template do |object, attribute, value|
+          object.set_with_an_audit(attribute, value)
+        end
+      end
+
     end
 
 ## Prior Art?
 
 There's got to be something else like this, right? If so, please let me know.
 I'm really curious about other ways folks have indulged their prosaic
-tendencies. 
+tendencies.
